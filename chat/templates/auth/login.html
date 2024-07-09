@@ -11,6 +11,7 @@
 <!-- POST auch bei Funktionsaufruf -->
 <form method="POST" action="/login/">
   {% csrf_token %}
+  <input type="hidden" name="redirect" value="{{ redirect }}" />
   <div><input name="username" type="text" /></div>
   <div><input name="password" type="password" /></div>
   <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"> Login </button>
