@@ -3,7 +3,7 @@
 <h1>Login</h1>
 
 {% if wrongPassword %}
-<p>Wrong username or password!</p>
+<p class="fs-18">Wrong username or password!</p>
 {% endif %}
 
 <!-- POST auch bei Funktionsaufruf -->
@@ -22,5 +22,7 @@
   </div>
   <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"> Login </button>
 </form>
+
+<div class="register-text"> Not registered yet? <a href="/accounts/signup/">Click here!</a> </div>
 
 {% endblock %}
