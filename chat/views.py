@@ -1,10 +1,11 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
-from .models import Chat, Message
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm
-
+from .models import Chat, Message
 
 
 # request: Objekt, wird standardmäßig in diese Funktion reingegeben
@@ -17,12 +18,14 @@ def index(request):
 	chatMessages = Message.objects.filter(chat__id=1)                            
 	return render(request, 'chat/index.html', {'messages': chatMessages})
 
+# Message.objects.create: Können auf unsere Datenbank zugreifen, create: Neue Instanz in Datenbank erstellen
+
+
 def login_view(request):
 	redirect = request.GET.get('next')
-	print(f"Redirect parameter: {redirect}")  # Debug-Ausgabe
+	print(f"Redirect parameter: {redirect}") 
 	if request.method == 'POST':
 		user = authenticate(username=request.POST.get('username'), password=request.POST.get('password'))
-
 		if user:
 			login(request, user)
 			return HttpResponseRedirect(request.POST.get('redirect'))
@@ -30,9 +33,6 @@ def login_view(request):
 			return render(request, 'auth/login.html', {'wrongPassword': True, 'redirect': redirect})
 	return render(request, 'auth/login.html', {'redirect': redirect})
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib import messages
 
 def register_view(response):
 	if response.method == "POST":
@@ -41,7 +41,7 @@ def register_view(response):
 			form.save()
 			return redirect("/chat")
 		else:
-			print(form.errors)  # Debugging: Ausgabe der Fehler im Formular
+			print(form.errors)  
 			messages.error(response, 'There was an error in your registration form.')
 	else:
 		form = RegisterForm()
