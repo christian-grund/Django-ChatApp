@@ -11,35 +11,45 @@
 </div>
 
 <script>
-	{% comment %} append: anhängen {% endcomment %}
-	async function sendMessage() {
-	  let fd = new FormData();
-	  let token = '{{ csrf_token}}';
+		{% comment %} append: anhängen {% endcomment %}
+		async function sendMessage() {
+		  let fd = new FormData();
+		  let token = '{{ csrf_token}}';
+		  let dateToday = getFormattedDate();
 
-	  fd.append('textmessage', messageField.value);
-	  fd.append('csrfmiddlewaretoken', token);
-	   console.log('fd:', fd);
-	  try {
-	     messageContainer.innerHTML += /*html*/`
-	      <div id="deleteMessage">
-	         <span class="color-gray">[DATUM]</span>
-	         {{ request.user.first_name }} <i class="color-gray">${messageField.value}</i>
-	      </div>
-	    `;
-	    let response = await fetch('/chat/', {
-	       method: 'POST',
-	       body: fd
-	   });
-	    deleteMessage.remove();
-	     messageContainer.innerHTML += /*html*/`
-	      <div>
-	         <span class="color-gray">[DATUM]</span>
-	         {{ request.user.first_name }} <i>${messageField.value}</i>
-	      </div>
-	    `;
-	  } catch(e) {
-	    console.log('An error occured', e)
-	  }
+		  fd.append('textmessage', messageField.value);
+		  fd.append('csrfmiddlewaretoken', token);
+		   console.log('fd:', fd);
+		  try {
+		     messageContainer.innerHTML += /*html*/`
+		      <div id="deleteMessage">
+		         <span class="color-gray">${dateToday}</span>
+		         {{ request.user.first_name }} <i class="color-gray">${messageField.value}</i>
+		      </div>
+		    `;
+		    let response = await fetch('/chat/', {
+		       method: 'POST',
+		       body: fd
+		   });
+		    deleteMessage.remove();
+		     {% comment %} messageContainer.innerHTML += /*html*/`
+		      <div>
+		         <span class="color-gray">${dateToday}</span>
+		         {{ request.user.first_name }} <i>${messageField.value}</i>
+		      </div>
+		    `; {% endcomment %}
+		  } catch(e) {
+		    console.log('An error occured', e)
+		  }
+		}
+
+	  function getFormattedDate() {
+	    const date = new Date();
+	    const year = date.getFullYear();
+	    const day = date.getDate();
+	    const month = date.toLocaleString('default', { month: 'long' });
+
+	    return `${month} ${day}, ${year}`;
 	}
 </script>
 
