@@ -19,7 +19,6 @@
 
 		  fd.append('textmessage', messageField.value);
 		  fd.append('csrfmiddlewaretoken', token);
-		   console.log('fd:', fd);
 		  try {
 		     messageContainer.innerHTML += /*html*/`
 		      <div id="deleteMessage">
@@ -31,7 +30,12 @@
 		       method: 'POST',
 		       body: fd
 		   });
+	       let responseAsJson = await response.json();
+
+	        {% comment %} PARSE!!! {% endcomment %}
+	       console.log('response.json():', responseAsJson)
 		    deleteMessage.remove();
+
 		     {% comment %} messageContainer.innerHTML += /*html*/`
 		      <div>
 		         <span class="color-gray">${dateToday}</span>
