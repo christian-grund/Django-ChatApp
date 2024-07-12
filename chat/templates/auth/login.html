@@ -8,21 +8,21 @@
 
 <!-- POST auch bei Funktionsaufruf -->
 <form method="POST" action="/login/" class="login-form">
-  {% csrf_token %}
-  <input type="hidden" name="redirect" value="{{ redirect }}" />
-  {% comment %} <div><input name="username" type="text" /></div> {% endcomment %}
-  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-    <input class="mdl-textfield__input" type="text" id="sample3" name="username" />
-    <label class="mdl-textfield__label" for="sample3">Username</label>
-  </div>
-  {% comment %} <div><input name="password" type="password" /></div> {% endcomment %}
-  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-    <input class="mdl-textfield__input" type="password" id="sample3" name="password" />
-    <label class="mdl-textfield__label" for="sample3">Password</label>
-  </div>
-  <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"> Login </button>
+	{% csrf_token %}
+	<input type="hidden" name="redirect" value="{{ redirect }}" />
+	{% comment %} <div><input name="username" type="text" /></div> {% endcomment %}
+	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+		<input class="mdl-textfield__input" type="text" id="sample5" name="username" />
+		<label class="mdl-textfield__label" for="sample3">Username</label>
+	</div>
+	{% comment %} <div><input name="password" type="password" /></div> {% endcomment %}
+	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+		<input class="mdl-textfield__input" type="password" id="sample6" name="password" />
+		<label class="mdl-textfield__label" for="sample3">Password</label>
+	</div>
+	<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"> Login </button>
 </form>
 
-<div class="register-text"> Not registered yet? <a href="/accounts/signup/">Click here!</a> </div>
+<div class="register-text"> Not registered yet? <a href="/register/">Click here!</a> </div>
 
 {% endblock %}

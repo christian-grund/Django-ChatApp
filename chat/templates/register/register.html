@@ -6,16 +6,20 @@
 	{% csrf_token %}
 
 	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-		<input class="mdl-textfield__input" type="text" id="sample3" name="username" />
-		<label class="mdl-textfield__label" for="sample3">Username</label>
+		<input class="mdl-textfield__input" type="text" id="regUsername" name="username" />
+		<label class="mdl-textfield__label" for="regUsername">User name</label>
 	</div>
 	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-		<input class="mdl-textfield__input" type="password" id="sample4" name="password1" />
-		<label class="mdl-textfield__label" for="sample3">Password</label>
+		<input class="mdl-textfield__input" type="text" id="regFirstName" name="first_name" />
+		<label class="mdl-textfield__label" for="regFirstName">First tname</label>
 	</div>
 	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-		<input class="mdl-textfield__input" type="password" id="sample5" name="password2" />
-		<label class="mdl-textfield__label" for="sample3">Password erneut eingeben</label>
+		<input class="mdl-textfield__input" type="password" id="regPassword" name="password1" />
+		<label class="mdl-textfield__label" for="regPassword">Password</label>
+	</div>
+	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+		<input class="mdl-textfield__input" type="password" id="regVerifyPassword" name="password2" />
+		<label class="mdl-textfield__label" for="regVerifyPassword">Verify password</label>
 	</div>
 
 	<button type="submit" class="btn btn-success">Register</button>

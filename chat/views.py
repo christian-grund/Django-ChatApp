@@ -5,23 +5,33 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from .forms import RegisterForm
 from .models import Chat, Message
-from django.http import HttpResponse
-from django.template import loader
+import json
 
 
 # request: Objekt, wird standardmäßig in diese Funktion reingegeben
 @login_required(login_url='/login/')
 def index(request):
-	if request.method == 'POST':
-		print("Received data: " + request.POST['textmessage'])
-		myChat = Chat.objects.get(id=1)
-		new_message = Message.objects.create(text=request.POST['textmessage'], chat=myChat, author=request.user, receiver=request.user)  # Nachricht wird erstellt
-		serialized_obj = serializers.serialize('json', [ new_message, ])
-		return JsonResponse(serialized_obj[1:-1], safe=False)
-	chatMessages = Message.objects.filter(chat__id=1)                            
-	return render(request, 'chat/index.html', {'messages': chatMessages})
+    if request.method == 'POST':
+        text_message = request.POST.get('textmessage')
+        if text_message:
+            myChat = Chat.objects.get(id=1)
+            new_message = Message.objects.create(
+                text=text_message,
+                chat=myChat,
+                author=request.user,
+                receiver=request.user
+            )
+            serialized_obj = serializers.serialize('json', [new_message])       # Serialize the new message object and return it as JSON
+            return JsonResponse(serialized_obj[1:-1], safe=False)
+        else:
+            return JsonResponse({'error': 'No text message provided'}, status=400)
+    
+    chatMessages = Message.objects.filter(chat__id=1)
+    return render(request, 'chat/index.html', {'messages': chatMessages})
 
 # Message.objects.create: Können auf unsere Datenbank zugreifen, create: Neue Instanz in Datenbank erstellen
 
@@ -53,8 +63,17 @@ def register_view(response):
 
 	return render(response, "register/register.html", {"form": form})
 
-def test_static(request):
-    template = loader.get_template('base.html')
-    return HttpResponse(template.render({}, request))
 
+# @method_decorator(csrf_exempt, name='dispatch')
+# def my_post_view(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         # Verarbeite die Daten hier
+#         response_data = {
+#             'message': 'Data received successfully',
+#             'received_data': data
+#         }
+#         return JsonResponse(response_data)
+#     else:
+#         return JsonResponse({'error': 'Invalid request method'}, status=400)
 

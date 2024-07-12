@@ -11,49 +11,76 @@
 </div>
 
 <script>
-		{% comment %} append: anhängen {% endcomment %}
-		async function sendMessage() {
-		  let fd = new FormData();
-		  let token = '{{ csrf_token}}';
-		  let dateToday = getFormattedDate();
+	async function sendMessage() {
+		let fd = new FormData();
+		let token = "{{ csrf_token}}";
+		let dateToday = getFormattedDate();
 
-		  fd.append('textmessage', messageField.value);
-		  fd.append('csrfmiddlewaretoken', token);
-		  try {
-		     messageContainer.innerHTML += /*html*/`
-		      <div id="deleteMessage">
-		         <span class="color-gray">${dateToday}</span>
-		         {{ request.user.first_name }} <i class="color-gray">${messageField.value}</i>
-		      </div>
-		    `;
-		    let response = await fetch('/chat/', {
-		       method: 'POST',
-		       body: fd
-		   });
-	       let responseAsJson = await response.json();
+		fd.append("textmessage", messageField.value);
+		fd.append("csrfmiddlewaretoken", token);
+		messageContainer.innerHTML += deleteMessageHTML(dateToday);
 
-	        {% comment %} PARSE!!! {% endcomment %}
-	       console.log('response.json():', responseAsJson)
-		    deleteMessage.remove();
+		try {
+			let response = await fetch("/chat/", {
+				method: "POST",
+				body: fd,
+			});
+			let responseAsJson = await response.json();
+			console.log("responseAsJson:", responseAsJson);
 
-		     {% comment %} messageContainer.innerHTML += /*html*/`
-		      <div>
-		         <span class="color-gray">${dateToday}</span>
-		         {{ request.user.first_name }} <i>${messageField.value}</i>
-		      </div>
-		    `; {% endcomment %}
-		  } catch(e) {
-		    console.log('An error occured', e)
-		  }
+			deleteMessage.remove();
+			messageContainer.innerHTML += showMessageHTML(dateToday);
+		} catch (e) {
+			console.log("An error occured", e);
+			deleteMessage.remove();
+			messageContainer.innerHTML += showErrorMessageHTML(dateToday);
+		}
+		messageField.value = "";
+	}
+
+	function deleteMessageHTML(dateToday) {
+		return /*html*/ `
+		<div id="deleteMessage">
+			<span class="color-gray">[${dateToday}]</span>
+			{{ request.user.first_name }}: <i class="color-gray">${messageField.value}</i>
+		</div>`;
+	}
+
+	function showMessageHTML(dateToday) {
+		return /*html*/ `
+		<div id="showMessage">
+			<span class="color-gray">[${dateToday}]</span>
+			{{ request.user.first_name }}: <i>${messageField.value}</i>
+		</div>
+	`;
+	}
+
+	function showErrorMessageHTML(dateToday) {
+		return /*html*/ `
+		<div class="color-red">
+			<span class="color-red">[${dateToday}]</span>
+			{{ request.user.first_name }}: <i>${messageField.value}</i>
+		</div>
+	`;
+	}
+
+	function getFormattedDate() {
+		const date = new Date();
+		const day = date.getDate();
+		const month = date.toLocaleString("default", { month: "long" });
+		const now = new Date();
+		let hours = now.getHours();
+		let minutes = now.getMinutes();
+
+		// Add leading zero to hours and minutes if they are less than 10
+		if (hours < 10) {
+			hours = "0" + hours;
+		}
+		if (minutes < 10) {
+			minutes = "0" + minutes;
 		}
 
-	  function getFormattedDate() {
-	    const date = new Date();
-	    const year = date.getFullYear();
-	    const day = date.getDate();
-	    const month = date.toLocaleString('default', { month: 'long' });
-
-	    return `${month} ${day}, ${year}`;
+		return `${day} ${month}, ${hours}:${minutes}`;
 	}
 </script>
 
