@@ -12,15 +12,15 @@
 	<input type="hidden" name="redirect" value="{{ redirect }}" />
 	{% comment %} <div><input name="username" type="text" /></div> {% endcomment %}
 	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-		<input class="mdl-textfield__input" type="text" id="sample5" name="username" />
+		<input class="mdl-textfield__input" type="text" id="sample5" name="username" {% if login_in_progress %}disabled{% endif %} />
 		<label class="mdl-textfield__label" for="sample3">Username</label>
 	</div>
 	{% comment %} <div><input name="password" type="password" /></div> {% endcomment %}
 	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-		<input class="mdl-textfield__input" type="password" id="sample6" name="password" />
+		<input class="mdl-textfield__input" type="password" id="sample6" name="password" {% if login_in_progress %}disabled{% endif %} />
 		<label class="mdl-textfield__label" for="sample3">Password</label>
 	</div>
-	<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"> Login </button>
+	<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" {% if login_in_progress %}disabled{% endif %}> {% if login_in_progress %} Logging in... {% else %} Login {% endif %} </button>
 </form>
 
 <div class="register-text"> Not registered yet? <a href="/register/">Click here!</a> </div>

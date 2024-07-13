@@ -43,9 +43,11 @@
 	<div class="container">
 		<h1>You have been logged out</h1>
 		<p>Would you like to log in again or register a new account?</p>
-		<a href="{% url 'login' %}?next=/chat/" class="button login">Log In</a>
-		<a href="{% url 'register' %}" class="button register">Register</a>
+		<div class="btns-bottom">
+			<a href="{% url 'login' %}?next=/chat/" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Log In</a>
+			<a href="{% url 'register' %}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Register</a>
+		</div>
 	</div>
-</div>
 
-{% endblock %}
+	{% endblock %}
+</div>

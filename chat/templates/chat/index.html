@@ -3,7 +3,8 @@
 <div id="messageContainer">
 	{% for message in messages %}
 	<div>
-		<span class="color-gray">[{{ message.created_at|date:'Y-m-d H:i:s' }}]</span>
+		{% comment %} <span class="color-gray">[{{ message.created_at|date:'Y-m-d H:i:s' }}]</span> {% endcomment %}
+		<span class="color-gray">[{{ message.created_at|date:'d.m. H:i' }}]</span>
 		{{ message.author.first_name }}: <i>{{ message.text }}</i>
 	</div>
 

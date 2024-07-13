@@ -32,3 +32,9 @@
 .fs-18 {
 	font-size: 18px;
 }
+
+.btns-bottom {
+	display: flex;
+	justify-content: center;
+	gap: 24px;
+}

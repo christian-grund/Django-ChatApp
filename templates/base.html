@@ -41,8 +41,9 @@
 					<div class="mdl-layout-spacer"></div>
 					<!-- Navigation. We hide it in small screens. -->
 					<nav class="mdl-navigation mdl-layout--large-screen-only">
-						{% csrf_token %}
+						{% if request.user.is_authenticated %} {% csrf_token %}
 						<p class="mdl-navigation__link" onclick="logout()">Logout</p>
+						{% endif %}
 					</nav>
 				</div>
 			</header>
