@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.core import serializers
 from django.shortcuts import redirect, render
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -47,6 +47,13 @@ def login_view(request):
 		else:
 			return render(request, 'auth/login.html', {'wrongPassword': True, 'redirect': redirect})
 	return render(request, 'auth/login.html', {'redirect': redirect})
+
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        return JsonResponse({'success': True})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+    # return redirect('logout')
 
 
 def register_view(response):

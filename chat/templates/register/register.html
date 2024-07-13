@@ -22,7 +22,12 @@
 		<label class="mdl-textfield__label" for="regVerifyPassword">Verify password</label>
 	</div>
 
-	<button type="submit" class="btn btn-success">Register</button>
+	<div class="btns-bottom">
+		<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"> Register </button>
+		<a href="/login/" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"> Back to login </a>
+	</div>
+
+	{% comment %} <button type="submit" class="btn btn-success">Register</button> {% endcomment %}
 </form>
 {% if messages %}
 <ul>
