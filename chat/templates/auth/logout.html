@@ -1,4 +1,3 @@
-{% comment %}
 <style>
 	wrapper {
 		font-family: Arial, sans-serif;
@@ -37,13 +36,16 @@
 		background-color: #008cba;
 	}
 </style>
-{% endcomment %}
+
+{% extends "base.html" %} {% block content %}
 
 <div class="wrapper">
 	<div class="container">
 		<h1>You have been logged out</h1>
 		<p>Would you like to log in again or register a new account?</p>
-		<a href="{% url 'login' %}" class="button login">Log In</a>
+		<a href="{% url 'login' %}?next=/chat/" class="button login">Log In</a>
 		<a href="{% url 'register' %}" class="button register">Register</a>
 	</div>
 </div>
+
+{% endblock %}

@@ -20,11 +20,11 @@
 					credentials: "same-origin",
 				})
 					.then((response) => {
-						{% comment %} if (response.ok) {
+						if (response.ok) {
 							window.location.href = "/logout/"; // Umleiten zur Startseite oder einer anderen Seite nach dem Logout
 						} else {
 							console.error("Logout failed");
-						} {% endcomment %}
+						}
 					})
 					.catch((error) => console.error("Error:", error));
 			}

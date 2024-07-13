@@ -27,12 +27,9 @@
 			});
 
 			let responseAsJson = await response.json();
-			console.log("responseAsJson:", responseAsJson);
-			// Überprüfen des gesamten JSON-Response in der Konsole
 			if (typeof responseAsJson === "string") {
 				responseAsJsonParsed = JSON.parse(responseAsJson);
 			}
-			console.log("responseAsJson after parsing:", responseAsJsonParsed);
 
 			deleteMessage.remove();
 			let createdAtFields = responseAsJsonParsed.fields.created_at;

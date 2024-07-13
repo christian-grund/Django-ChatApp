@@ -37,23 +37,24 @@ def index(request):
 
 
 def login_view(request):
-	redirect = request.GET.get('next')
+	# redirect = request.GET.get('next')
+	redirect_to = request.POST.get('redirect', request.GET.get('next', ''))
 	print(f"Redirect parameter: {redirect}") 
 	if request.method == 'POST':
 		user = authenticate(username=request.POST.get('username'), password=request.POST.get('password'))
 		if user:
 			login(request, user)
-			return HttpResponseRedirect(request.POST.get('redirect'))
+			# return HttpResponseRedirect(request.POST.get('redirect'))
+			return HttpResponseRedirect(redirect_to)
 		else:
-			return render(request, 'auth/login.html', {'wrongPassword': True, 'redirect': redirect})
-	return render(request, 'auth/login.html', {'redirect': redirect})
+			return render(request, 'auth/login.html', {'wrongPassword': True, 'redirect': redirect_to})
+	return render(request, 'auth/login.html', {'redirect': redirect_to})
 
 def logout_view(request):
     if request.method == 'POST':
         logout(request)
-        return JsonResponse({'success': True})
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-    # return redirect('logout')
+        return redirect('login')  # Verwende hier den Namen der Login-View
+    return render(request, 'auth/logout.html') 
 
 
 def register_view(response):
