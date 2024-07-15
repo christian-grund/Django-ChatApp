@@ -1,11 +1,14 @@
 {% extends "base.html" %} {% block content %} {% if request.user.is_authenticated %}
 
-<div id="messageContainer">
+<div id="messageContainer" class="message-container">
 	{% for message in messages %}
-	<div>
-		{% comment %} <span class="color-gray">[{{ message.created_at|date:'Y-m-d H:i:s' }}]</span> {% endcomment %}
-		<span class="color-gray">[{{ message.created_at|date:'d.m. H:i' }}]</span>
-		{{ message.author.first_name }}: <i>{{ message.text }}</i>
+	<div class="bubble {% if message.author == request.user %}msg-right{% else %}msg-left{% endif %}">
+		<div class="msg-header">
+			<span class="{% if message.author == request.user %}msg-author{% else %}msg-receiver{% endif %}">{{ message.author.first_name }}</span>
+			<span class="material-symbols-outlined"> info </span>
+		</div>
+		<span class="msg-msg">{{ message.text }}</span>
+		<span class="color-gray msg-time">{{ message.created_at|date:'H:i' }}</span>
 	</div>
 
 	{% endfor %}
@@ -47,9 +50,9 @@
 
 	function formatDateTime(isoString) {
 		let date = new Date(isoString);
-		let formattedDate = date.toISOString().split("T")[0];
-		let formattedTime = date.toTimeString().split(" ")[0];
-		return `${formattedDate} ${formattedTime}`;
+		{% comment %} let formattedDate = date.toISOString().split("T")[0]; {% endcomment %}
+		let formattedTime = date.toTimeString().split(" ")[0].substring(0, 5);
+		return `${formattedTime}`;
 	}
 
 	function deleteMessageHTML(messageValue) {
@@ -75,9 +78,27 @@
 				{{ request.user.first_name }}: <i>${messageValue}</i>
 			</div>`;
 	}
+
+	function scrollToElement(elementId) {
+		var element = document.getElementById(elementId);
+		if (element) {
+			element.scrollIntoView();
+		}
+	}
+
+	// Scrollt zum Ziel-Element, sobald das DOM vollständig geladen ist
+	{% comment %} document.addEventListener('DOMContentLoaded', function() {
+		scrollToElement('messageInput');
+	}); {% endcomment %}
+
+	document.addEventListener('DOMContentLoaded', function() {
+		setTimeout(function() {
+			scrollToElement('messageInput');
+		}, 250);
+	});
 </script>
 
-<form onsubmit="sendMessage(); return false;" method="post">
+<form onsubmit="sendMessage(); return false;" method="post" id="messageInput">
 	{% csrf_token %}
 	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 		<input class="mdl-textfield__input" type="text" id="messageField" name="textmessage" />

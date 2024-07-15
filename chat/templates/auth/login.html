@@ -6,23 +6,43 @@
 <p class="fs-18">Wrong username or password!</p>
 {% endif %}
 
+<p>Login in progress: {{ login_in_progress }}</p>
+
 <!-- POST auch bei Funktionsaufruf -->
 <form method="POST" action="/login/" class="login-form">
 	{% csrf_token %}
 	<input type="hidden" name="redirect" value="{{ redirect }}" />
 	{% comment %} <div><input name="username" type="text" /></div> {% endcomment %}
 	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-		<input class="mdl-textfield__input" type="text" id="sample5" name="username" {% if login_in_progress %}disabled{% endif %} />
+		<input class="mdl-textfield__input" type="text" id="sample5" name="username" {% if login_in_progress %} disabled style="color: red" {% endif %} value="{{ username }}" />
 		<label class="mdl-textfield__label" for="sample3">Username</label>
 	</div>
 	{% comment %} <div><input name="password" type="password" /></div> {% endcomment %}
 	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-		<input class="mdl-textfield__input" type="password" id="sample6" name="password" {% if login_in_progress %}disabled{% endif %} />
+		<input class="mdl-textfield__input" type="password" id="sample6" name="password" {% if login_in_progress %} style="color: red" readonly {% endif %} value="{{ password }}" />
 		<label class="mdl-textfield__label" for="sample3">Password</label>
 	</div>
-	<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" {% if login_in_progress %}disabled{% endif %}> {% if login_in_progress %} Logging in... {% else %} Login {% endif %} </button>
-</form>
+	{% comment %} <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" {% if login_in_progress %}disabled{% endif %}> {% if login_in_progress %} Logging in... {% else %} Login {% endif %} </button> {% endcomment %} <button id="loginButton" {% if login_in_progress %}disabled{% endif %}> {% if login_in_progress %} Logging in... {% else %} Login {% endif %} </button></form
+>
 
 <div class="register-text"> Not registered yet? <a href="/register/">Click here!</a> </div>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		var loginButton = document.getElementById('loginButton');
+		var loginInProgress = {{ login_in_progress|yesno:"true,false" }};
+
+		console.log('Login in progress:', loginInProgress);
+
+		if (loginInProgress) {
+			loginButton.disabled = true;
+			loginButton.textContent = 'Logging in...';
+			DEBUGGER;
+		} else {
+			loginButton.disabled = false;
+			loginButton.textContent = 'Login';
+		}
+	});
+</script>
 
 {% endblock %}

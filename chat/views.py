@@ -37,17 +37,18 @@ def index(request):
 
 
 def login_view(request):
-	# redirect = request.GET.get('next')
+	login_in_progress = False
 	redirect_to = request.POST.get('redirect', request.GET.get('next', ''))
 	print(f"Redirect parameter: {redirect}") 
 	if request.method == 'POST':
 		user = authenticate(username=request.POST.get('username'), password=request.POST.get('password'))
+		login_in_progress = True 
 		if user:
 			login(request, user)
-			# return HttpResponseRedirect(request.POST.get('redirect'))
 			return HttpResponseRedirect(redirect_to)
 		else:
-			return render(request, 'auth/login.html', {'wrongPassword': True, 'redirect': redirect_to})
+			return render(request, 'auth/login.html', {'wrongPassword': True, 'redirect': redirect_to, 'login_in_progress': login_in_progress})
+	login_in_progress = False	
 	return render(request, 'auth/login.html', {'redirect': redirect_to})
 
 def logout_view(request):
