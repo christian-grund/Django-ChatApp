@@ -11,6 +11,10 @@
 			</div>
 		</div>
 		<span class="msg-msg">{{ message.text }}</span>
+		<div class="message-edit-container display-none" class="messageEditContainer">
+			<input class="msg-msg" id="messageEditField" type="text" name="textmessage" />
+			<p class="material-icons-outlined msg-icon">check</p>
+		</div>
 		<span class="color-gray msg-time">{{ message.created_at|date:'H:i' }}</span>
 	</div>
 
@@ -18,8 +22,32 @@
 </div>
 
 <script>
+	async function editMessage(messageId) {
+		let token = "{% CSRFToken %}";
+		let messageText = messageTextEdit.value;
+		console.log()
+
+		try {
+			let response = await fetch(`/chat/edit/${messageId}`, {
+				method: 'PUT',
+				headers: {
+					'Content-type': 'csrf_token'
+				}
+				body: messageValue
+			});
+			let responseAsJson = response.json();
+
+			if (response.ok) {
+				console.log(`Message with ID ${messageId} successfully deleted`)
+			} else {
+				console.info(`Failed deleting message with ID ${messageId}`)
+			}
+		} catch (error) {
+			console.warn('An error occured:', error)
+		}
+	}
+
 	async function deleteMessage(messageId) {
-			console.log('messageId:', messageId)
 	       let token = "{{ csrf_token }}";
 
 	       try {
@@ -32,6 +60,7 @@
 
 	           if (response.ok) {
 	               document.querySelector(`.bubble[data-id="${messageId}"]`).remove();
+				   console.log('messageId:', messageId)
 	           } else {
 	               console.error("Failed to delete message");
 	           }
