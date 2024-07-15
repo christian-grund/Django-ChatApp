@@ -1,6 +1,6 @@
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseNotAllowed, HttpResponseRedirect, JsonResponse
 from django.core import serializers
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
@@ -35,6 +35,18 @@ def index(request):
 
 # Message.objects.create: Können auf unsere Datenbank zugreifen, create: Neue Instanz in Datenbank erstellen
 
+@csrf_exempt
+@login_required(login_url='/login/')
+def delete_message(request, message_id):
+    if request.method == 'DELETE':
+        try:
+            message = Message.objects.get(id=message_id, author=request.user)
+            message.delete()
+            return JsonResponse({'success': True})
+        except Message.DoesNotExist:
+            return JsonResponse({'error': 'Message not found or not authorized'}, status=404)
+    return HttpResponseNotAllowed(['DELETE'])
+
 
 def login_view(request):
 	login_in_progress = False
@@ -50,6 +62,7 @@ def login_view(request):
 			return render(request, 'auth/login.html', {'wrongPassword': True, 'redirect': redirect_to, 'login_in_progress': login_in_progress})
 	login_in_progress = False	
 	return render(request, 'auth/login.html', {'redirect': redirect_to})
+
 
 def logout_view(request):
     if request.method == 'POST':
@@ -73,16 +86,19 @@ def register_view(response):
 	return render(response, "register/register.html", {"form": form})
 
 
-# @method_decorator(csrf_exempt, name='dispatch')
-# def my_post_view(request):
-#     if request.method == 'POST':
-#         data = json.loads(request.body)
-#         # Verarbeite die Daten hier
-#         response_data = {
-#             'message': 'Data received successfully',
-#             'received_data': data
-#         }
-#         return JsonResponse(response_data)
-#     else:
-#         return JsonResponse({'error': 'Invalid request method'}, status=400)
+# def delete_view(request, id):
+#     context ={}
+ 
+#     # fetch the object related to passed id
+#     obj = get_object_or_404(Message, id = id)
+ 
+ 
+#     if request.method =="POST":
+#         # delete object
+#         obj.delete()
+#         # after deleting redirect to 
+#         # home page
+#         return HttpResponseRedirect("/")
+ 
+#     return render(request, "delete_view.html", context)
 

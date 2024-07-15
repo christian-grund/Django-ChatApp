@@ -7,8 +7,17 @@ body {
 	padding: 24px;
 }
 
+.material-icons-outlined {
+	margin: 0 !important;
+	line-height: unset !important;
+}
+
 .pos-rel {
 	position: relative;
+}
+
+.display-none {
+	display: none;
 }
 
 .page-content {
@@ -101,4 +110,24 @@ body {
 	font-size: 12px;
 	color: rgba(0, 0, 0, 0.4);
 	text-align: right;
+}
+
+.msg-icon {
+	font-size: 16px;
+}
+
+.msg-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.msg-edit {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.msg-edit p {
+	cursor: pointer;
 }

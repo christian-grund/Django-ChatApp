@@ -1,11 +1,14 @@
-{% extends "base.html" %} {% block content %} {% if request.user.is_authenticated %}
+{% extends "base.html" %} {% block content %} {% load django_material_icons %} {% if request.user.is_authenticated %}
 
 <div id="messageContainer" class="message-container">
 	{% for message in messages %}
-	<div class="bubble {% if message.author == request.user %}msg-right{% else %}msg-left{% endif %}">
+	<div class="bubble {% if message.author == request.user %}msg-right{% else %}msg-left{% endif %}" data-id="{{ message.id }}">
 		<div class="msg-header">
 			<span class="{% if message.author == request.user %}msg-author{% else %}msg-receiver{% endif %}">{{ message.author.first_name }}</span>
-			<span class="material-symbols-outlined"> info </span>
+			<div class="{% if message.author == request.user %}msg-edit{% else %}display-none{% endif %}">
+				<p class="material-icons-outlined msg-icon">edit</p>
+				<p class="material-icons-outlined msg-icon" onclick="deleteMessage({{ message.id }})">delete</p>
+			</div>
 		</div>
 		<span class="msg-msg">{{ message.text }}</span>
 		<span class="color-gray msg-time">{{ message.created_at|date:'H:i' }}</span>
@@ -15,6 +18,28 @@
 </div>
 
 <script>
+	async function deleteMessage(messageId) {
+			console.log('messageId:', messageId)
+	       let token = "{{ csrf_token }}";
+
+	       try {
+	           let response = await fetch(`/chat/delete/${messageId}/`, {
+	               method: "DELETE",
+	               headers: {
+	                   "X-CSRFToken": token,
+	               },
+	           });
+
+	           if (response.ok) {
+	               document.querySelector(`.bubble[data-id="${messageId}"]`).remove();
+	           } else {
+	               console.error("Failed to delete message");
+	           }
+	       } catch (e) {
+	           console.log("An error occurred", e);
+	       }
+	   }
+
 	async function sendMessage() {
 		let fd = new FormData();
 		let token = "{{ csrf_token }}";
@@ -31,9 +56,11 @@
 			});
 
 			let responseAsJson = await response.json();
+
 			if (typeof responseAsJson === "string") {
 				responseAsJsonParsed = JSON.parse(responseAsJson);
 			}
+			console.log('responseAsJsonParsed pk:', responseAsJsonParsed.pk)
 
 			deleteMessage.remove();
 			let createdAtFields = responseAsJsonParsed.fields.created_at;
@@ -50,7 +77,6 @@
 
 	function formatDateTime(isoString) {
 		let date = new Date(isoString);
-		{% comment %} let formattedDate = date.toISOString().split("T")[0]; {% endcomment %}
 		let formattedTime = date.toTimeString().split(" ")[0].substring(0, 5);
 		return `${formattedTime}`;
 	}
