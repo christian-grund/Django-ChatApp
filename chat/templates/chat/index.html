@@ -7,7 +7,7 @@
 			<span class="{% if message.author == request.user %}msg-author{% else %}msg-receiver{% endif %}">{{ message.author.first_name }}</span>
 			{% if message.author == request.user %}
 			<div class="msg-edit">
-				<p class="material-icons-outlined msg-icon" onclick="openEditMessage({{ message.id }})">edit</p>
+				<p class="material-icons-outlined msg-icon" onclick="openEditMessage({{ message.id }}, '{{ message.text }}')">edit</p>
 				<p class="material-icons-outlined msg-icon" onclick="deleteMessage({{ message.id }})">delete</p>
 			</div>
 			{% endif %}
@@ -15,7 +15,7 @@
 		<span class="msg-msg">{{ message.text }}</span>
 		{% if message.author == request.user %}
 		<div class="message-edit-container" id="messageEditContainer-{{ message.id }}" class="message-edit-container">
-			<input class="msg-msg" id="messageEditField-{{ message.id }}" type="text" name="textmessage" />
+			<input class="msg-msg mdl-textfield__input" id="messageEditField-{{ message.id }}" type="text" name="textmessage" />
 			<p class="material-icons-outlined msg-icon">check</p>
 		</div>
 		{% endif %}
@@ -26,10 +26,12 @@
 </div>
 
 <script>
-	{% comment %} function openEditMessage(messageId) {
-
-	} {% endcomment %}
-
+	function openEditMessage(messageId, messageText) {
+		let messageEditContainer = document.getElementById(`messageEditContainer-${messageId}`);
+		let inputField = document.getElementById(`messageEditField-${messageId}`);
+		messageEditContainer.classList.add("display-flex");
+		inputField.value = messageText;
+	}
 
 	async function editMessage(messageId) {
 		let token = "{{ csrf_token }}";
@@ -37,12 +39,12 @@
 
 		try {
 			let response = await fetch(`/chat/edit/${messageId}`, {
-				method: 'PUT',
+				method: "PUT",
 				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': token
+					"Content-Type": "application/json",
+					"X-CSRFToken": token,
 				},
-				body: JSON.stringify({ message: messageText })
+				body: JSON.stringify({ message: messageText }),
 			});
 
 			let responseAsJson = await response.json();
@@ -53,39 +55,36 @@
 				console.info(`Failed editing message with ID ${messageId}`);
 			}
 		} catch (error) {
-			console.warn('An error occurred:', error);
+			console.warn("An error occurred:", error);
 		}
 	}
 
-
-
 	async function deleteMessage(messageId) {
-	       let token = "{{ csrf_token }}";
+		let token = "{{ csrf_token }}";
 
-	       try {
-	           let response = await fetch(`/chat/delete/${messageId}/`, {
-	               method: "DELETE",
-	               headers: {
-	                   "X-CSRFToken": token,
-	               },
-	           });
+		try {
+			let response = await fetch(`/chat/delete/${messageId}/`, {
+				method: "DELETE",
+				headers: {
+					"X-CSRFToken": token,
+				},
+			});
 
-	           if (response.ok) {
-	               document.querySelector(`.bubble[data-id="${messageId}"]`).remove();
-				   console.log('messageId:', messageId)
-	           } else {
-	               console.error("Failed to delete message");
-	           }
-	       } catch (e) {
-	           console.log("An error occurred", e);
-	       }
-	   }
+			if (response.ok) {
+				document.querySelector(`.bubble[data-id="${messageId}"]`).remove();
+				console.log("messageId:", messageId);
+			} else {
+				console.error("Failed to delete message");
+			}
+		} catch (e) {
+			console.log("An error occurred", e);
+		}
+	}
 
 	async function sendMessage() {
 		let fd = new FormData();
 		let token = "{{ csrf_token }}";
 		let messageValue = messageField.value;
-
 
 		fd.append("textmessage", messageValue);
 		fd.append("csrfmiddlewaretoken", token);
@@ -152,9 +151,9 @@
 		}
 	}
 
-	document.addEventListener('DOMContentLoaded', function() {
-		setTimeout(function() {
-			scrollToElement('messageInput');
+	document.addEventListener("DOMContentLoaded", function () {
+		setTimeout(function () {
+			scrollToElement("messageInput");
 		}, 250);
 	});
 </script>

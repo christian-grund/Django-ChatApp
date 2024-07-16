@@ -20,6 +20,10 @@ body {
 	display: none;
 }
 
+.display-flex {
+	display: flex !important;
+}
+
 .page-content {
 	display: flex;
 	flex-direction: column;
@@ -133,5 +137,13 @@ body {
 }
 
 .message-edit-container {
+	display: none;
+	justify-content: space-between;
+	align-items: center;
 	width: 100%;
+}
+
+.message-edit-container input {
+	width: calc(100% - 20px - 2 * 8px);
+	text-align: left;
 }
