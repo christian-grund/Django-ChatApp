@@ -5,16 +5,20 @@
 	<div class="bubble {% if message.author == request.user %}msg-right{% else %}msg-left{% endif %}" data-id="{{ message.id }}">
 		<div class="msg-header">
 			<span class="{% if message.author == request.user %}msg-author{% else %}msg-receiver{% endif %}">{{ message.author.first_name }}</span>
-			<div class="{% if message.author == request.user %}msg-edit{% else %}display-none{% endif %}">
-				<p class="material-icons-outlined msg-icon">edit</p>
+			{% if message.author == request.user %}
+			<div class="msg-edit">
+				<p class="material-icons-outlined msg-icon" onclick="openEditMessage({{ message.id }})">edit</p>
 				<p class="material-icons-outlined msg-icon" onclick="deleteMessage({{ message.id }})">delete</p>
 			</div>
+			{% endif %}
 		</div>
 		<span class="msg-msg">{{ message.text }}</span>
-		<div class="message-edit-container display-none" class="messageEditContainer">
-			<input class="msg-msg" id="messageEditField" type="text" name="textmessage" />
+		{% if message.author == request.user %}
+		<div class="message-edit-container" id="messageEditContainer-{{ message.id }}" class="message-edit-container">
+			<input class="msg-msg" id="messageEditField-{{ message.id }}" type="text" name="textmessage" />
 			<p class="material-icons-outlined msg-icon">check</p>
 		</div>
+		{% endif %}
 		<span class="color-gray msg-time">{{ message.created_at|date:'H:i' }}</span>
 	</div>
 
@@ -22,30 +26,38 @@
 </div>
 
 <script>
+	{% comment %} function openEditMessage(messageId) {
+
+	} {% endcomment %}
+
+
 	async function editMessage(messageId) {
-		let token = "{% CSRFToken %}";
+		let token = "{{ csrf_token }}";
 		let messageText = messageTextEdit.value;
-		console.log()
 
 		try {
 			let response = await fetch(`/chat/edit/${messageId}`, {
 				method: 'PUT',
 				headers: {
-					'Content-type': 'csrf_token'
-				}
-				body: messageValue
+					'Content-Type': 'application/json',
+					'X-CSRFToken': token
+				},
+				body: JSON.stringify({ message: messageText })
 			});
-			let responseAsJson = response.json();
+
+			let responseAsJson = await response.json();
 
 			if (response.ok) {
-				console.log(`Message with ID ${messageId} successfully deleted`)
+				console.log(`Message with ID ${messageId} successfully edited`);
 			} else {
-				console.info(`Failed deleting message with ID ${messageId}`)
+				console.info(`Failed editing message with ID ${messageId}`);
 			}
 		} catch (error) {
-			console.warn('An error occured:', error)
+			console.warn('An error occurred:', error);
 		}
 	}
+
+
 
 	async function deleteMessage(messageId) {
 	       let token = "{{ csrf_token }}";
@@ -74,9 +86,11 @@
 		let token = "{{ csrf_token }}";
 		let messageValue = messageField.value;
 
+
 		fd.append("textmessage", messageValue);
 		fd.append("csrfmiddlewaretoken", token);
 		messageContainer.innerHTML += deleteMessageHTML(messageValue);
+		let deleteMessage = document.getElementById("deleteMessage");
 
 		try {
 			let response = await fetch("/chat/", {
@@ -86,10 +100,7 @@
 
 			let responseAsJson = await response.json();
 
-			if (typeof responseAsJson === "string") {
-				responseAsJsonParsed = JSON.parse(responseAsJson);
-			}
-			console.log('responseAsJsonParsed pk:', responseAsJsonParsed.pk)
+			responseAsJsonParsed = JSON.parse(responseAsJson);
 
 			deleteMessage.remove();
 			let createdAtFields = responseAsJsonParsed.fields.created_at;
@@ -113,8 +124,8 @@
 	function deleteMessageHTML(messageValue) {
 		return /*html*/ `
 			<div id="deleteMessage">
-				<span class="color-gray">[{{ message.created_at }}]</span>
-				{{ request.user.first_name }}: <i class="color-gray">${messageValue}</i>
+				<i class="color-gray"><span class="color-gray">[{{ message.created_at }}]</span>
+				{{ request.user.first_name }}: ${messageValue}</i>
 			</div>`;
 	}
 
@@ -140,11 +151,6 @@
 			element.scrollIntoView();
 		}
 	}
-
-	// Scrollt zum Ziel-Element, sobald das DOM vollständig geladen ist
-	{% comment %} document.addEventListener('DOMContentLoaded', function() {
-		scrollToElement('messageInput');
-	}); {% endcomment %}
 
 	document.addEventListener('DOMContentLoaded', function() {
 		setTimeout(function() {
