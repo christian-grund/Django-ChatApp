@@ -103,7 +103,7 @@ def register_view(response):
 	else:
 		form = RegisterForm()
 
-	return render(response, "register/register.html", {"form": form})
+	return render(response, "auth/register.html", {"form": form})
 
 
 # def delete_view(request, id):

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Register</h1>
+    <form method="post" class="login-form">
+        {% csrf_token %}
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input"
+                   type="text"
+                   id="regUsername"
+                   name="username" />
+            <label class="mdl-textfield__label" for="regUsername">User name</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input"
+                   type="text"
+                   id="regFirstName"
+                   name="first_name" />
+            <label class="mdl-textfield__label" for="regFirstName">First tname</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input"
+                   type="password"
+                   id="regPassword"
+                   name="password1" />
+            <label class="mdl-textfield__label" for="regPassword">Password</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input"
+                   type="password"
+                   id="regVerifyPassword"
+                   name="password2" />
+            <label class="mdl-textfield__label" for="regVerifyPassword">Verify password</label>
+        </div>
+        <div class="btns-bottom">
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Register</button>
+            <a href="{% url 'login' %}?next=/chat/"
+               class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"> Back to login </a>
+        </div>
+        {% comment %} <button type="submit" class="btn btn-success">Register</button> {% endcomment %}
+        <div class="pw-requirements">
+            <p>Password requirements:</p>
+            <ul>
+                <li>Your password can’t be too similar to the users other personal information.</li>
+                <li>Your password must contain at least 8 characters.</li>
+                <li>Your password can’t be a commonly used password.</li>
+                <li>Your password can’t be entirely numeric.</li>
+            </ul>
+        </div>
+    </form>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+{% endblock content %}

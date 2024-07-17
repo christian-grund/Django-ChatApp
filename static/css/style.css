@@ -164,3 +164,15 @@ body {
 .message-edit-container p {
 	cursor: pointer;
 }
+
+.pw-requirements {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	margin-top: 32px;
+}
+
+.pw-requirements p {
+	margin: unset;
+	font-weight: bold;
+}
