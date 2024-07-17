@@ -1,10 +1,12 @@
 body {
 	line-height: unset !important;
+	font-size: 16px !important;
 }
 
 .page-content {
 	background-color: #dddfe1;
 	padding: 24px;
+	min-height: 100vh;
 }
 
 .material-icons-outlined {
@@ -12,12 +14,20 @@ body {
 	line-height: unset !important;
 }
 
+.c-pointer {
+	cursor: pointer;
+}
+
+.c-pointer:hover {
+	text-decoration: underline;
+}
+
 .pos-rel {
 	position: relative;
 }
 
 .display-none {
-	display: none;
+	display: none !important;
 }
 
 .display-flex {
@@ -61,16 +71,6 @@ body {
 	gap: 24px;
 }
 
-/* .message-container {
-	width: 100%;
-	height: 100%;
-	background-image: url("../img/1.jpg");
-	display: flex;
-	align-items: center;
-	flex-direction: column;
-	padding: 16px;
-} */
-
 .message-container {
 	max-height: calc(100% - 56px);
 	overflow-y: auto;
@@ -102,22 +102,22 @@ body {
 
 .msg-author {
 	color: lightblue;
-	font-size: 12px;
+	font-size: 14px;
 }
 
 .msg-receiver {
 	color: lightgreen;
-	font-size: 12px;
+	font-size: 14px;
 }
 
 .msg-time {
-	font-size: 12px;
+	font-size: 14px;
 	color: rgba(0, 0, 0, 0.4);
 	text-align: right;
 }
 
 .msg-icon {
-	font-size: 16px;
+	font-size: 18px;
 }
 
 .msg-header {
@@ -130,6 +130,7 @@ body {
 	display: flex;
 	align-items: center;
 	gap: 4px;
+	font-size: 18px;
 }
 
 .msg-edit p {
@@ -146,4 +147,9 @@ body {
 .message-edit-container input {
 	width: calc(100% - 20px - 2 * 8px);
 	text-align: left;
+	font-size: 16px;
+}
+
+.message-edit-container p {
+	cursor: pointer;
 }

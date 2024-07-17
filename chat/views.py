@@ -1,4 +1,4 @@
-from django.http import HttpResponseNotAllowed, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect, JsonResponse
 from django.core import serializers
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
 from .forms import RegisterForm
 from .models import Chat, Message
@@ -32,6 +33,25 @@ def index(request):
     
     chatMessages = Message.objects.filter(chat__id=1)
     return render(request, 'chat/index.html', {'messages': chatMessages})
+
+
+# @login_required(login_url='/login/')
+@csrf_exempt
+@require_http_methods(["PATCH"])
+def edit_message(request, message_id):
+    message = get_object_or_404(Message, id=message_id)
+    if request.user != message.author:
+        return HttpResponse(status=403)
+
+    try:
+        data = json.loads(request.body)
+        message.text = data['text']  # 'text' ist der Name des Feldes, das du aktualisieren möchtest
+        message.save()
+        return JsonResponse({'status': 'success', 'message': message.text})
+    except (KeyError, ValueError):
+        return JsonResponse({'status': 'error', 'message': 'Invalid data'}, status=400)
+                  
+
 
 # Message.objects.create: Können auf unsere Datenbank zugreifen, create: Neue Instanz in Datenbank erstellen
 

@@ -22,10 +22,10 @@
 		<input class="mdl-textfield__input" type="password" id="sample6" name="password" {% if login_in_progress %} style="color: red" readonly {% endif %} value="{{ password }}" />
 		<label class="mdl-textfield__label" for="sample3">Password</label>
 	</div>
-	{% comment %} <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" {% if login_in_progress %}disabled{% endif %}> {% if login_in_progress %} Logging in... {% else %} Login {% endif %} </button> {% endcomment %} <button id="loginButton" {% if login_in_progress %}disabled{% endif %}> {% if login_in_progress %} Logging in... {% else %} Login {% endif %} </button></form
+	{% comment %} <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" {% if login_in_progress %}disabled{% endif %}> {% if login_in_progress %} Logging in... {% else %} Login {% endif %} </button> {% endcomment %} <button id="loginButton" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" {% if login_in_progress %}disabled{% endif %}> {% if login_in_progress %} Logging in... {% else %} Login {% endif %} </button></form
 >
 
-<div class="register-text"> Not registered yet? <a href="/register/">Click here!</a> </div>
+<div class="register-text"> Not registered yet? <a href="/register/" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Click here!</a> </div>
 
 <script>
 	document.addEventListener('DOMContentLoaded', function() {

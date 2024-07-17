@@ -7,16 +7,16 @@
 			<span class="{% if message.author == request.user %}msg-author{% else %}msg-receiver{% endif %}">{{ message.author.first_name }}</span>
 			{% if message.author == request.user %}
 			<div class="msg-edit">
-				<p class="material-icons-outlined msg-icon" onclick="openEditMessage({{ message.id }}, '{{ message.text }}')">edit</p>
+				<p class="material-icons-outlined msg-icon" onclick="editMessage({{ message.id }})">edit</p>
 				<p class="material-icons-outlined msg-icon" onclick="deleteMessage({{ message.id }})">delete</p>
 			</div>
 			{% endif %}
 		</div>
-		<span class="msg-msg">{{ message.text }}</span>
+		<span class="msg-msg" id="message-{{ message.id }}">{{ message.text }}</span>
 		{% if message.author == request.user %}
 		<div class="message-edit-container" id="messageEditContainer-{{ message.id }}" class="message-edit-container">
 			<input class="msg-msg mdl-textfield__input" id="messageEditField-{{ message.id }}" type="text" name="textmessage" />
-			<p class="material-icons-outlined msg-icon">check</p>
+			<p class="material-icons-outlined msg-icon" onclick="saveEditedMessage({{ message.id }})">check</p>
 		</div>
 		{% endif %}
 		<span class="color-gray msg-time">{{ message.created_at|date:'H:i' }}</span>
@@ -26,37 +26,44 @@
 </div>
 
 <script>
-	function openEditMessage(messageId, messageText) {
+	function editMessage(messageId) {
 		let messageEditContainer = document.getElementById(`messageEditContainer-${messageId}`);
 		let inputField = document.getElementById(`messageEditField-${messageId}`);
+		let messageText = document.getElementById(`message-${messageId}`);
 		messageEditContainer.classList.add("display-flex");
-		inputField.value = messageText;
+		inputField.value = messageText.innerHTML;
+		messageText.classList.add("display-none");
 	}
 
-	async function editMessage(messageId) {
+	async function saveEditedMessage(messageId) {
 		let token = "{{ csrf_token }}";
-		let messageText = messageTextEdit.value;
+		let editedMessage = document.getElementById(`messageEditField-${messageId}`).value;
+		let messageEditContainer = document.getElementById(`messageEditContainer-${messageId}`);
+		let messageText = document.getElementById(`message-${messageId}`);
 
 		try {
-			let response = await fetch(`/chat/edit/${messageId}`, {
-				method: "PUT",
+			let response = await fetch(`/chat/edit/${messageId}/`, {
+				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
 					"X-CSRFToken": token,
 				},
-				body: JSON.stringify({ message: messageText }),
+				body: JSON.stringify({ text: editedMessage }),
 			});
 
 			let responseAsJson = await response.json();
+			console.log("responseAsJson", responseAsJson);
 
-			if (response.ok) {
-				console.log(`Message with ID ${messageId} successfully edited`);
-			} else {
+			if (!response.ok) {
 				console.info(`Failed editing message with ID ${messageId}`);
 			}
 		} catch (error) {
-			console.warn("An error occurred:", error);
+			console.warn("saveEditedMessage An error occurred:", error);
 		}
+
+		messageEditContainer.classList.remove("display-flex");
+		messageText.classList.remove("display-none");
+		messageText.innerHTML = editedMessage;
 	}
 
 	async function deleteMessage(messageId) {
@@ -98,7 +105,6 @@
 			});
 
 			let responseAsJson = await response.json();
-
 			responseAsJsonParsed = JSON.parse(responseAsJson);
 
 			deleteMessage.remove();
@@ -144,6 +150,19 @@
 			</div>`;
 	}
 
+	document.addEventListener("DOMContentLoaded", (event) => {
+		let messageField = document.getElementById("messageField");
+		let sendButton = document.getElementById("postMessageBtn");
+
+		messageField.addEventListener("input", () => {
+			if (messageField.value.trim() === "") {
+				sendButton.disabled = true;
+			} else {
+				sendButton.disabled = false;
+			}
+		});
+	});
+
 	function scrollToElement(elementId) {
 		var element = document.getElementById(elementId);
 		if (element) {
@@ -165,14 +184,14 @@
 		<label class="mdl-textfield__label" for="messageField">Text...</label>
 	</div>
 
-	<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"> Send </button>
+	<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="postMessageBtn" disabled> Send </button>
 </form>
 
 {% else %}
 <h1>Not logged in</h1>
 <p>
 	You are currently not logged in. Please log in. <br />
-	Please click <a href="/login/">here</a>.
+	Please click <a href="/login/" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">here</a>.
 </p>
 
 {% endif %} {% endblock %}
