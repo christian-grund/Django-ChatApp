@@ -1,197 +1,253 @@
-{% extends "base.html" %} {% block content %} {% load django_material_icons %} {% if request.user.is_authenticated %}
-
-<div id="messageContainer" class="message-container">
-	{% for message in messages %}
-	<div class="bubble {% if message.author == request.user %}msg-right{% else %}msg-left{% endif %}" data-id="{{ message.id }}">
-		<div class="msg-header">
-			<span class="{% if message.author == request.user %}msg-author{% else %}msg-receiver{% endif %}">{{ message.author.first_name }}</span>
-			{% if message.author == request.user %}
-			<div class="msg-edit">
-				<p class="material-icons-outlined msg-icon" onclick="editMessage({{ message.id }})">edit</p>
-				<p class="material-icons-outlined msg-icon" onclick="deleteMessage({{ message.id }})">delete</p>
-			</div>
-			{% endif %}
-		</div>
-		<span class="msg-msg" id="message-{{ message.id }}">{{ message.text }}</span>
-		{% if message.author == request.user %}
-		<div class="message-edit-container" id="messageEditContainer-{{ message.id }}" class="message-edit-container">
-			<input class="msg-msg mdl-textfield__input" id="messageEditField-{{ message.id }}" type="text" name="textmessage" />
-			<p class="material-icons-outlined msg-icon" onclick="saveEditedMessage({{ message.id }})">check</p>
-		</div>
-		{% endif %}
-		<span class="color-gray msg-time">{{ message.created_at|date:'H:i' }}</span>
-	</div>
-
-	{% endfor %}
-</div>
-
-<script>
-	function editMessage(messageId) {
-		let messageEditContainer = document.getElementById(`messageEditContainer-${messageId}`);
-		let inputField = document.getElementById(`messageEditField-${messageId}`);
-		let messageText = document.getElementById(`message-${messageId}`);
-		messageEditContainer.classList.add("display-flex");
-		inputField.value = messageText.innerHTML;
-		messageText.classList.add("display-none");
-	}
-
-	async function saveEditedMessage(messageId) {
-		let token = "{{ csrf_token }}";
-		let editedMessage = document.getElementById(`messageEditField-${messageId}`).value;
-		let messageEditContainer = document.getElementById(`messageEditContainer-${messageId}`);
-		let messageText = document.getElementById(`message-${messageId}`);
-
-		try {
-			let response = await fetch(`/chat/edit/${messageId}/`, {
-				method: "PATCH",
-				headers: {
-					"Content-Type": "application/json",
-					"X-CSRFToken": token,
-				},
-				body: JSON.stringify({ text: editedMessage }),
-			});
-
-			let responseAsJson = await response.json();
-			console.log("responseAsJson", responseAsJson);
-
-			if (!response.ok) {
-				console.info(`Failed editing message with ID ${messageId}`);
-			}
-		} catch (error) {
-			console.warn("saveEditedMessage An error occurred:", error);
+{% extends "base.html" %}
+{% block content %}
+    {% load django_material_icons %}
+    {% if request.user.is_authenticated %}
+        <div id="messageContainer" class="message-container">
+            {% for message in messages %}
+                <div class="bubble {% if message.author == request.user %}msg-right{% else %}msg-left{% endif %}"
+                     id="bubble-{{ message.id }}">
+                    <div class="msg-header">
+                        <span class="{% if message.author == request.user %}msg-author{% else %}msg-receiver{% endif %}">{{ message.author.first_name }}</span>
+                        {% if message.author == request.user %}
+                            <div class="msg-edit">
+                                <p class="material-icons-outlined msg-icon"
+                                   onclick="editMessage({{ message.id }})">edit</p>
+                                <p class="material-icons-outlined msg-icon"
+                                   onclick="deleteMessage({{ message.id }})">delete</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <span class="msg-msg" id="message-{{ message.id }}">{{ message.text }}</span>
+                    {% if message.author == request.user %}
+                        <div id="messageEditContainer-{{ message.id }}"
+                             class="message-edit-container">
+                            <input class="msg-msg mdl-textfield__input"
+                                   id="messageEditField-{{ message.id }}"
+                                   type="text"
+                                   name="textmessage" />
+                            <p class="material-icons-outlined msg-icon"
+                               onclick="saveEditedMessage({{ message.id }})">send</p>
+                        </div>
+                    {% endif %}
+                    <div class="msg-bottom">
+                        <span class="color-gray msg-time">{{ message.created_at|date:'H:i' }}</span>
+                        <div class="msg-bottom-check">
+                            <p class="material-icons-outlined msg-icon">check</p>
+                            <p class="material-icons-outlined msg-icon">check</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <script>
+		function editMessage(messageId) {
+			let messageEditContainer = document.getElementById(`messageEditContainer-${messageId}`);
+			let inputField = document.getElementById(`messageEditField-${messageId}`);
+			let messageText = document.getElementById(`message-${messageId}`);
+			messageEditContainer.classList.add("display-flex");
+			inputField.value = messageText.innerHTML;
+			messageText.classList.add("display-none");
 		}
 
-		messageEditContainer.classList.remove("display-flex");
-		messageText.classList.remove("display-none");
-		messageText.innerHTML = editedMessage;
-	}
+		async function saveEditedMessage(messageId) {
+			let token = "{{ csrf_token }}";
+			let editedMessage = document.getElementById(`messageEditField-${messageId}`).value;
+			let messageEditContainer = document.getElementById(`messageEditContainer-${messageId}`);
+			let messageText = document.getElementById(`message-${messageId}`);
+			
 
-	async function deleteMessage(messageId) {
-		let token = "{{ csrf_token }}";
+			try {
+				let response = await fetch(`/chat/edit/${messageId}/`, {
+					method: "PATCH",
+					headers: {
+						"Content-Type": "application/json",
+						"X-CSRFToken": token,
+					},
+					body: JSON.stringify({ text: editedMessage }),
+				});
 
-		try {
-			let response = await fetch(`/chat/delete/${messageId}/`, {
-				method: "DELETE",
-				headers: {
-					"X-CSRFToken": token,
-				},
-			});
+				let responseAsJson = await response.json();
+				console.log("responseAsJson", responseAsJson);
 
-			if (response.ok) {
-				document.querySelector(`.bubble[data-id="${messageId}"]`).remove();
-				console.log("messageId:", messageId);
+				if (!response.ok) {
+					console.info(`Failed editing message with ID ${messageId}`);
+				}
+			} catch (error) {
+				console.warn("saveEditedMessage An error occurred:", error);
+			}
+
+			messageEditContainer.classList.remove("display-flex");
+			messageText.classList.remove("display-none");
+			messageText.innerHTML = editedMessage;
+		}
+
+		async function deleteMessage(messageId) {
+			let token = "{{ csrf_token }}";
+			{% comment %} let bubbleElement = document.querySelector(`.bubble[data-id="${messageId}"]`); {% endcomment %}
+			let bubbleElement = document.getElementById(`bubble-${messageId}`)
+		
+			// Prüfen, ob das Element existiert
+			if (bubbleElement) {
+				console.log(`Element with data-id="${messageId}" exists.`)
 			} else {
-				console.error("Failed to delete message");
+				console.error(`Element with data-id="${messageId}" not found.`);
+				return;
 			}
-		} catch (e) {
-			console.log("An error occurred", e);
+		
+			try {
+				let response = await fetch(`/chat/delete/${messageId}/`, {
+					method: "DELETE",
+					headers: {
+						"X-CSRFToken": token,
+					},
+				});
+		
+				if (response.ok) {
+					bubbleElement.remove();
+					console.log("messageId:", messageId);
+				} else {
+					console.error("Failed to delete message");
+				}
+			} catch (e) {
+				console.log("Failed to delete message. An error occurred", e);
+			}
 		}
-	}
+		
 
-	async function sendMessage() {
-		let fd = new FormData();
-		let token = "{{ csrf_token }}";
-		let messageValue = messageField.value;
+		async function sendMessage() {
+			let fd = new FormData();
+			let token = "{{ csrf_token }}";
+			let messageValue = messageField.value;
 
-		fd.append("textmessage", messageValue);
-		fd.append("csrfmiddlewaretoken", token);
-		messageContainer.innerHTML += deleteMessageHTML(messageValue);
-		let deleteMessage = document.getElementById("deleteMessage");
+			fd.append("textmessage", messageValue);
+			fd.append("csrfmiddlewaretoken", token);
+			messageContainer.innerHTML += deleteMessageHTML(messageValue);
+			let deleteMessage = document.getElementById("deleteMessage");
 
-		try {
-			let response = await fetch("/chat/", {
-				method: "POST",
-				body: fd,
+			try {
+				let response = await fetch("/chat/", {
+					method: "POST",
+					body: fd,
+				});
+
+				let responseAsJson = await response.json();
+				responseAsJsonParsed = JSON.parse(responseAsJson);
+
+				deleteMessage.remove();
+
+				let createdAtFields = responseAsJsonParsed.fields.created_at;
+				let createdAt = formatDateTime(responseAsJsonParsed.fields.created_at);
+				messageContainer.innerHTML += showMessageHTML(createdAt, messageValue, responseAsJsonParsed.pk);
+			} catch (e) {
+				console.log("An error occurred", e);
+				deleteMessage.remove();
+				let createdAt = formatDateTime(new Date().toISOString());
+				messageContainer.innerHTML += showErrorMessageHTML(createdAt, messageValue);
+			}
+			messageField.value = "";
+		}
+
+		function formatDateTime(isoString) {
+			let date = new Date(isoString);
+			let formattedTime = date.toTimeString().split(" ")[0].substring(0, 5);
+			return `${formattedTime}`;
+		}
+
+		function deleteMessageHTML(messageValue) {
+			return /*html*/ `
+				<div id="deleteMessage">
+					<i class="color-gray"><span class="color-gray">[{{ message.created_at }}]</span>
+					{{ request.user.first_name }}: ${messageValue}</i>
+				</div>`;
+		}
+
+		function showMessageHTML(createdAt, messageValue, id) {
+			return /*html*/ `
+				<div class="bubble msg-right" id="bubble-${id}">
+					<div class="msg-header">
+						<span class="msg-author">{{ request.user.first_name }}</span>
+
+					 <div class="msg-edit">
+						<p class="material-icons-outlined msg-icon" onclick="#">edit</p>
+						<p class="material-icons-outlined msg-icon" onclick="deleteMessage(${id})">delete</p>
+					</div> 
+				</div>
+
+				<i><span class="msg-msg" id="message-${id}">${messageValue}</span></i>
+				<div class="message-edit-container" id="messageEditContainer-${id}" class="message-edit-container">
+					<input class="msg-msg mdl-textfield__input" id="messageEditField-${id}" type="text" name="textmessage" />
+					<p class="material-icons-outlined msg-icon" onclick="saveEditedMessage(${id})">send</p>
+				</div>
+				<div class="msg-bottom">
+					<span class="color-gray msg-time">${createdAt}</span>
+					<p class="material-icons-outlined msg-icon">check</p>
+				</div>
+			</div>`;
+		} 
+
+		{% comment %} function showMessageHTML(createdAt, messageValue) {
+			return /*html*/ `
+				<div id="showMessage">
+					<span class="color-gray">[${createdAt}]</span>
+					{{ request.user.first_name }}: <i>${messageValue}</i>
+				</div>`;
+} {% endcomment %}
+		function showErrorMessageHTML(createdAt, messageValue) {
+			return /*html*/ `
+				<div class="color-red">
+					<span class="color-red">[${createdAt}]</span>
+					{{ request.user.first_name }}: <i>${messageValue}</i>
+				</div>`;
+		}
+
+		document.addEventListener("DOMContentLoaded", (event) => {
+			let messageField = document.getElementById("messageField");
+			let sendButton = document.getElementById("postMessageBtn");
+
+			messageField.addEventListener("input", () => {
+				if (messageField.value.trim() === "") {
+					sendButton.disabled = true;
+				} else {
+					sendButton.disabled = false;
+				}
 			});
-
-			let responseAsJson = await response.json();
-			responseAsJsonParsed = JSON.parse(responseAsJson);
-
-			deleteMessage.remove();
-			let createdAtFields = responseAsJsonParsed.fields.created_at;
-			let createdAt = formatDateTime(responseAsJsonParsed.fields.created_at);
-			messageContainer.innerHTML += showMessageHTML(createdAt, messageValue);
-		} catch (e) {
-			console.log("An error occurred", e);
-			deleteMessage.remove();
-			let createdAt = formatDateTime(new Date().toISOString());
-			messageContainer.innerHTML += showErrorMessageHTML(createdAt, messageValue);
-		}
-		messageField.value = "";
-	}
-
-	function formatDateTime(isoString) {
-		let date = new Date(isoString);
-		let formattedTime = date.toTimeString().split(" ")[0].substring(0, 5);
-		return `${formattedTime}`;
-	}
-
-	function deleteMessageHTML(messageValue) {
-		return /*html*/ `
-			<div id="deleteMessage">
-				<i class="color-gray"><span class="color-gray">[{{ message.created_at }}]</span>
-				{{ request.user.first_name }}: ${messageValue}</i>
-			</div>`;
-	}
-
-	function showMessageHTML(createdAt, messageValue) {
-		return /*html*/ `
-			<div id="showMessage">
-				<span class="color-gray">[${createdAt}]</span>
-				{{ request.user.first_name }}: <i>${messageValue}</i>
-			</div>`;
-	}
-
-	function showErrorMessageHTML(createdAt, messageValue) {
-		return /*html*/ `
-			<div class="color-red">
-				<span class="color-red">[${createdAt}]</span>
-				{{ request.user.first_name }}: <i>${messageValue}</i>
-			</div>`;
-	}
-
-	document.addEventListener("DOMContentLoaded", (event) => {
-		let messageField = document.getElementById("messageField");
-		let sendButton = document.getElementById("postMessageBtn");
-
-		messageField.addEventListener("input", () => {
-			if (messageField.value.trim() === "") {
-				sendButton.disabled = true;
-			} else {
-				sendButton.disabled = false;
-			}
 		});
-	});
 
-	function scrollToElement(elementId) {
-		var element = document.getElementById(elementId);
-		if (element) {
-			element.scrollIntoView();
+		function scrollToElement(elementId) {
+			var element = document.getElementById(elementId);
+			if (element) {
+				element.scrollIntoView();
+			}
 		}
-	}
 
-	document.addEventListener("DOMContentLoaded", function () {
-		setTimeout(function () {
-			scrollToElement("messageInput");
-		}, 250);
-	});
-</script>
-
-<form onsubmit="sendMessage(); return false;" method="post" id="messageInput">
-	{% csrf_token %}
-	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-		<input class="mdl-textfield__input" type="text" id="messageField" name="textmessage" />
-		<label class="mdl-textfield__label" for="messageField">Text...</label>
-	</div>
-
-	<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="postMessageBtn" disabled> Send </button>
-</form>
-
-{% else %}
-<h1>Not logged in</h1>
-<p>
-	You are currently not logged in. Please log in. <br />
-	Please click <a href="/login/" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">here</a>.
-</p>
-
-{% endif %} {% endblock %}
+		document.addEventListener("DOMContentLoaded", function () {
+			setTimeout(function () {
+				scrollToElement("messageInput");
+			}, 250);
+		});
+        </script>
+        <form onsubmit="sendMessage(); return false;"
+              method="post"
+              id="messageInput">
+            {% csrf_token %}
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input"
+                       type="text"
+                       id="messageField"
+                       name="textmessage" />
+                <label class="mdl-textfield__label" for="messageField">Text...</label>
+            </div>
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+                    id="postMessageBtn"
+                    disabled>Send</button>
+        </form>
+    {% else %}
+        <h1>Not logged in</h1>
+        <p>
+            You are currently not logged in. Please log in.
+            <br />
+            Please click <a href="/login/"
+    class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">here</a>.
+        </p>
+    {% endif %}
+{% endblock %}
