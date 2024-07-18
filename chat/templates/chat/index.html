@@ -49,13 +49,22 @@
 			messageText.classList.add("display-none");
 		}
 
+		
 		async function saveEditedMessage(messageId) {
 			let token = "{{ csrf_token }}";
 			let editedMessage = document.getElementById(`messageEditField-${messageId}`).value;
 			let messageEditContainer = document.getElementById(`messageEditContainer-${messageId}`);
 			let messageText = document.getElementById(`message-${messageId}`);
 			
+			sendEditedMessage(messageId, token, editedMessage);
 
+			messageEditContainer.classList.remove("display-flex");
+			messageText.classList.remove("display-none");
+			messageText.innerHTML = editedMessage;
+		}
+
+
+		async function sendEditedMessage(messageId, token, editedMessage) { 
 			try {
 				let response = await fetch(`/chat/edit/${messageId}/`, {
 					method: "PATCH",
@@ -66,32 +75,18 @@
 					body: JSON.stringify({ text: editedMessage }),
 				});
 
-				let responseAsJson = await response.json();
-				console.log("responseAsJson", responseAsJson);
-
 				if (!response.ok) {
 					console.info(`Failed editing message with ID ${messageId}`);
 				}
 			} catch (error) {
 				console.warn("saveEditedMessage An error occurred:", error);
 			}
-
-			messageEditContainer.classList.remove("display-flex");
-			messageText.classList.remove("display-none");
-			messageText.innerHTML = editedMessage;
 		}
+
 
 		async function deleteMessage(messageId) {
 			let token = "{{ csrf_token }}";
 			let bubbleElement = document.getElementById(`bubble-${messageId}`)
-		
-			if (bubbleElement) {
-				console.log(`Element with data-id="${messageId}" exists.`)
-			} else {
-				console.error(`Element with data-id="${messageId}" not found.`);
-				return;
-			}
-		
 			try {
 				let response = await fetch(`/chat/delete/${messageId}/`, {
 					method: "DELETE",
@@ -99,10 +94,8 @@
 						"X-CSRFToken": token,
 					},
 				});
-		
 				if (response.ok) {
 					bubbleElement.remove();
-					console.log("messageId:", messageId);
 				} else {
 					console.error("Failed to delete message");
 				}
@@ -123,35 +116,50 @@
 			let deleteMessage = document.getElementById("deleteMessage");
 
 			try {
-				let response = await fetch("/chat/", {
-					method: "POST",
-					body: fd,
-				});
-
-				let responseAsJson = await response.json();
-				responseAsJsonParsed = JSON.parse(responseAsJson);
-
-				deleteMessage.remove();
-
-				let createdAtFields = responseAsJsonParsed.fields.created_at;
-				let createdAt = formatDateTime(responseAsJsonParsed.fields.created_at);
-				messageContainer.innerHTML += showMessageHTML(createdAt, messageValue, responseAsJsonParsed.pk);
+				let [responseAsJson, responseAsJsonParsed] = await sendMessageTry(fd);
+				sendMessageTryFunctions(messageValue, deleteMessage, responseAsJsonParsed);
 			} catch (e) {
-				console.log("An error occurred", e);
-				deleteMessage.remove();
-				let createdAt = formatDateTime(new Date().toISOString());
-				messageContainer.innerHTML += showErrorMessageHTML(createdAt, messageValue);
+				sendMessageCatchFunctions(e, deleteMessage, messageContainer, messageValue);
 			}
 			messageField.value = "";
 			postMessageBtn.disabled = true;
 			scrollToElement("messageInput");
 		}
 
+
+		async function sendMessageTry(fd) {
+			let response = await fetch("/chat/", {
+				method: "POST",
+				body: fd,
+			});
+
+			let responseAsJson = await response.json();
+			let responseAsJsonParsed = JSON.parse(responseAsJson);
+			return [responseAsJson, responseAsJsonParsed];
+		}
+
+		function sendMessageTryFunctions(messageValue, deleteMessage, responseAsJsonParsed) {
+			deleteMessage.remove();
+			let createdAtFields = responseAsJsonParsed.fields.created_at;
+			let createdAt = formatDateTime(responseAsJsonParsed.fields.created_at);
+			messageContainer.innerHTML += showMessageHTML(createdAt, messageValue, responseAsJsonParsed.pk);
+		}
+
+
+		function sendMessageCatchFunctions(e, deleteMessage, messageContainer, messageValue) {
+			console.warn("An error occurred", e);
+			deleteMessage.remove();
+			let createdAt = formatDateTime(new Date().toISOString());
+			messageContainer.innerHTML += showErrorMessageHTML(createdAt, messageValue);
+		}
+
+
 		function formatDateTime(isoString) {
 			let date = new Date(isoString);
 			let formattedTime = date.toTimeString().split(" ")[0].substring(0, 5);
 			return `${formattedTime}`;
 		}
+
 
 		function deleteMessageHTML(messageValue) {
 			return /*html*/ `
@@ -160,6 +168,7 @@
 					{{ request.user.first_name }}: ${messageValue}</i>
 				</div>`;
 		}
+
 
 		function showMessageHTML(createdAt, messageValue, id) {
 			return /*html*/ `
@@ -197,11 +206,7 @@
 						<span class="color-red msg-time">${createdAt}</span>
 					</div>
 				</div>`;
-				{% comment %} <div class="color-red">
-					<span class="color-red">[${createdAt}]</span>
-					{{ request.user.first_name }}: <i>${messageValue}</i>
-</div> {% endcomment %}
-		}
+			}
 
 		document.addEventListener("DOMContentLoaded", (event) => {
 			let messageField = document.getElementById("messageField");
@@ -214,7 +219,6 @@
 					sendButton.disabled = false;
 				}
 			});
-			
 		});
 
 		document.addEventListener("DOMContentLoaded", function () {
@@ -222,7 +226,7 @@
 				scrollToElement("messageInput");
 			}, 250);
 		});
-		
+
 
 		function scrollToElement(elementId) {
 			var element = document.getElementById(elementId);

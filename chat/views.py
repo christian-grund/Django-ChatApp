@@ -104,21 +104,3 @@ def register_view(response):
 		form = RegisterForm()
 
 	return render(response, "auth/register.html", {"form": form})
-
-
-# def delete_view(request, id):
-#     context ={}
- 
-#     # fetch the object related to passed id
-#     obj = get_object_or_404(Message, id = id)
- 
- 
-#     if request.method =="POST":
-#         # delete object
-#         obj.delete()
-#         # after deleting redirect to 
-#         # home page
-#         return HttpResponseRedirect("/")
- 
-#     return render(request, "delete_view.html", context)
-
