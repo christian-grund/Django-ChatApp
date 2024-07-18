@@ -7,43 +7,49 @@
             <input class="mdl-textfield__input"
                    type="text"
                    id="regUsername"
-                   name="username" />
+                   name="username" 
+                   onkeyup="enableBtn()"/>
             <label class="mdl-textfield__label" for="regUsername">User name</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <input class="mdl-textfield__input"
                    type="text"
                    id="regFirstName"
-                   name="first_name" />
+                   name="first_name"
+                   onkeyup="enableBtn()" 
+                   />
             <label class="mdl-textfield__label" for="regFirstName">First tname</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <input class="mdl-textfield__input"
                    type="password"
                    id="regPassword"
-                   name="password1" />
+                   name="password1"
+                   onkeyup="enableBtn()" 
+                   />
             <label class="mdl-textfield__label" for="regPassword">Password</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <input class="mdl-textfield__input"
                    type="password"
                    id="regVerifyPassword"
-                   name="password2" />
+                   name="password2"
+                   onkeyup="enableBtn()" 
+                   />
+                   
             <label class="mdl-textfield__label" for="regVerifyPassword">Verify password</label>
         </div>
         <div class="btns-bottom">
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Register</button>
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" disabled id="registerBtn">Register</button>
             <a href="{% url 'login' %}?next=/chat/"
                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"> Back to login </a>
         </div>
-        {% comment %} <button type="submit" class="btn btn-success">Register</button> {% endcomment %}
         <div class="pw-requirements">
-            <p>Password requirements:</p>
+            <p>Register requirements:</p>
             <ul>
-                <li>Your password can’t be too similar to the users other personal information.</li>
-                <li>Your password must contain at least 9 characters.</li>
-                <li>Your password can’t be a commonly used password.</li>
-                <li>Your password can’t be entirely numeric.</li>
+                <li>Your user name must contain at least 3 characters.</li>
+                <li>Your first name must contain at least 3 characters.</li>
+                <li>Your password must contain at least 8 characters.</li>
             </ul>
         </div>
     </form>
@@ -52,4 +58,22 @@
             {% for message in messages %}<li>{{ message }}</li>{% endfor %}
         </ul>
     {% endif %}
+    <script>
+        function enableBtn() {
+            let btn = document.getElementById("registerBtn");
+            let username = document.getElementById("regUsername").value;
+            let firstname = document.getElementById("regFirstName").value;
+            let pw = document.getElementById("regPassword").value;
+            let pw_confirm = document.getElementById("regVerifyPassword").value;
+            console.log(username.length >= 3)
+            console.log()
+            console.log()
+        
+            if ((username.length >= 3 && firstname.length >= 3 && pw.length >= 8 && pw_confirm.length >= 8 && pw == pw_confirm)) {
+              btn.disabled = false;
+            } else {
+                btn.disabled = true;
+            }
+          }
+    </script>
 {% endblock content %}
