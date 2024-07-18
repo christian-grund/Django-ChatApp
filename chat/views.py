@@ -16,6 +16,9 @@ import json
 # request: Objekt, wird standardmäßig in diese Funktion reingegeben
 @login_required(login_url='/login/')
 def index(request):
+    """
+     Render the chat HTML page and handle the submission of new chat messages.
+    """
     if request.method == 'POST':
         text_message = request.POST.get('textmessage')
         if text_message:
@@ -39,6 +42,9 @@ def index(request):
 @csrf_exempt
 @require_http_methods(["PATCH"])
 def edit_message(request, message_id):
+    """
+    Edit an existing message with the given message_id.
+    """
     message = get_object_or_404(Message, id=message_id)
     if request.user != message.author:
         return HttpResponse(status=403)
@@ -58,6 +64,9 @@ def edit_message(request, message_id):
 @csrf_exempt
 @login_required(login_url='/login/')
 def delete_message(request, message_id):
+    """
+    Delete an existing message with the given message_id.
+    """
     if request.method == 'DELETE':
         try:
             message = Message.objects.get(id=message_id, author=request.user)
@@ -69,22 +78,28 @@ def delete_message(request, message_id):
 
 
 def login_view(request):
-	login_in_progress = False
-	redirect_to = request.POST.get('redirect', request.GET.get('next', ''))
-	print(f"Redirect parameter: {redirect}") 
-	if request.method == 'POST':
-		user = authenticate(username=request.POST.get('username'), password=request.POST.get('password'))
-		login_in_progress = True 
-		if user:
-			login(request, user)
-			return HttpResponseRedirect(redirect_to)
-		else:
-			return render(request, 'auth/login.html', {'wrongPassword': True, 'redirect': redirect_to, 'login_in_progress': login_in_progress})
-	login_in_progress = False	
-	return render(request, 'auth/login.html', {'redirect': redirect_to})
+    """
+    Handle user login.
+    """
+    login_in_progress = False
+    redirect_to = request.POST.get('redirect', request.GET.get('next', ''))
+    print(f"Redirect parameter: {redirect}") 
+    if request.method == 'POST':
+        user = authenticate(username=request.POST.get('username'), password=request.POST.get('password'))
+        login_in_progress = True 
+        if user:
+            login(request, user)
+            return HttpResponseRedirect(redirect_to)
+        else:
+            return render(request, 'auth/login.html', {'wrongPassword': True, 'redirect': redirect_to, 'login_in_progress': login_in_progress})
+    login_in_progress = False	
+    return render(request, 'auth/login.html', {'redirect': redirect_to})
 
 
 def logout_view(request):
+    """
+    Handle user logout.
+    """
     if request.method == 'POST':
         logout(request)
         return redirect('login')  # Verwende hier den Namen der Login-View
@@ -92,15 +107,18 @@ def logout_view(request):
 
 
 def register_view(response):
-	if response.method == "POST":
-		form = RegisterForm(response.POST)
-		if form.is_valid():
-			form.save()
-			return redirect("/chat")
-		else:
-			print(form.errors)  
-			messages.error(response, 'There was an error in your registration form.')
-	else:
-		form = RegisterForm()
+    """
+    Handle user registration.
+    """
+    if response.method == "POST":
+        form = RegisterForm(response.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("/chat")
+        else:
+            print(form.errors)  
+            messages.error(response, 'There was an error in your registration form.')
+    else:
+        form = RegisterForm()
 
-	return render(response, "auth/register.html", {"form": form})
+    return render(response, "auth/register.html", {"form": form})
