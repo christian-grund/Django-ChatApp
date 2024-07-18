@@ -83,10 +83,8 @@
 
 		async function deleteMessage(messageId) {
 			let token = "{{ csrf_token }}";
-			{% comment %} let bubbleElement = document.querySelector(`.bubble[data-id="${messageId}"]`); {% endcomment %}
 			let bubbleElement = document.getElementById(`bubble-${messageId}`)
 		
-			// Prüfen, ob das Element existiert
 			if (bubbleElement) {
 				console.log(`Element with data-id="${messageId}" exists.`)
 			} else {
@@ -120,7 +118,7 @@
 			let messageValue = messageField.value;
 
 			fd.append("textmessage", messageValue);
-			fd.append("csrfmiddlewaretoken", token);
+			fd.append("csrfmiddlewaretoken", token); 
 			messageContainer.innerHTML += deleteMessageHTML(messageValue);
 			let deleteMessage = document.getElementById("deleteMessage");
 
@@ -145,6 +143,8 @@
 				messageContainer.innerHTML += showErrorMessageHTML(createdAt, messageValue);
 			}
 			messageField.value = "";
+			postMessageBtn.disabled = true;
+			scrollToElement("messageInput");
 		}
 
 		function formatDateTime(isoString) {
@@ -185,19 +185,22 @@
 			</div>`;
 		} 
 
-		{% comment %} function showMessageHTML(createdAt, messageValue) {
-			return /*html*/ `
-				<div id="showMessage">
-					<span class="color-gray">[${createdAt}]</span>
-					{{ request.user.first_name }}: <i>${messageValue}</i>
-				</div>`;
-} {% endcomment %}
+
 		function showErrorMessageHTML(createdAt, messageValue) {
 			return /*html*/ `
-				<div class="color-red">
+				<div class="bubble msg-right color-red">
+					<div class="msg-header">
+						<span class="msg-author color-red">{{ request.user.first_name }}</span> 
+					</div>
+					<i><span class="msg-msg">${messageValue}</span></i>
+					<div class="msg-bottom">
+						<span class="color-red msg-time">${createdAt}</span>
+					</div>
+				</div>`;
+				{% comment %} <div class="color-red">
 					<span class="color-red">[${createdAt}]</span>
 					{{ request.user.first_name }}: <i>${messageValue}</i>
-				</div>`;
+</div> {% endcomment %}
 		}
 
 		document.addEventListener("DOMContentLoaded", (event) => {
@@ -211,7 +214,15 @@
 					sendButton.disabled = false;
 				}
 			});
+			
 		});
+
+		document.addEventListener("DOMContentLoaded", function () {
+			setTimeout(function () {
+				scrollToElement("messageInput");
+			}, 250);
+		});
+		
 
 		function scrollToElement(elementId) {
 			var element = document.getElementById(elementId);
@@ -219,12 +230,6 @@
 				element.scrollIntoView();
 			}
 		}
-
-		document.addEventListener("DOMContentLoaded", function () {
-			setTimeout(function () {
-				scrollToElement("messageInput");
-			}, 250);
-		});
         </script>
         <form onsubmit="sendMessage(); return false;"
               method="post"

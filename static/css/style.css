@@ -48,7 +48,7 @@ body {
 }
 
 .color-red {
-	color: red;
+	color: red !important;
 }
 
 .login-form {
