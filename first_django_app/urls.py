@@ -21,7 +21,7 @@ from chat.views import index, login_view, logout_view, register_view, delete_mes
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', RedirectView.as_view(url='/login/', permanent=False)),
+    path('', RedirectView.as_view(url='/login/?next=/chat/', permanent=False)),
     path('chat/', index),
     path("register/", register_view, name='register'),
     path('login/', login_view, name='login'),

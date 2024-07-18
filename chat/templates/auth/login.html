@@ -3,11 +3,9 @@
     <h1>Login</h1>
     {% if wrongPassword %}<p class="fs-18">Wrong username or password!</p>{% endif %}
     <p>Login in progress: {{ login_in_progress }}</p>
-    <!-- POST auch bei Funktionsaufruf -->
     <form method="post" action="{% url 'login' %}" class="login-form">
         {% csrf_token %}
         <input type="hidden" name="redirect" value="{{ redirect }}" />
-        {% comment %} <div><input name="username" type="text" /></div> {% endcomment %}
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <input class="mdl-textfield__input"
                    type="text"
@@ -17,7 +15,6 @@
                    value="{{ username }}" />
             <label class="mdl-textfield__label" for="sample3">Username</label>
         </div>
-        {% comment %} <div><input name="password" type="password" /></div> {% endcomment %}
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <input class="mdl-textfield__input"
                    type="password"
@@ -27,7 +24,6 @@
                    value="{{ password }}" />
             <label class="mdl-textfield__label" for="sample3">Password</label>
         </div>
-        {% comment %} <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" {% if login_in_progress %}disabled{% endif %}> {% if login_in_progress %} Logging in... {% else %} Login {% endif %} </button> {% endcomment %}
         <button id="loginButton"
                 class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
                 {% if login_in_progress %}disabled{% endif %}>
