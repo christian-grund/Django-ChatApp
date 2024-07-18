@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>Login</h1>
-    {% if wrongPassword %}<p class="fs-18">Wrong username or password!</p>{% endif %}
-    <p>Login in progress: {{ login_in_progress }}</p>
     <form method="post" action="{% url 'login' %}" class="login-form">
         {% csrf_token %}
         <input type="hidden" name="redirect" value="{{ redirect }}" />
@@ -11,7 +9,6 @@
                    type="text"
                    id="sample5"
                    name="username"
-                   {% if login_in_progress %}disabled style="color: red"{% endif %}
                    value="{{ username }}" />
             <label class="mdl-textfield__label" for="sample3">Username</label>
         </div>
@@ -20,39 +17,16 @@
                    type="password"
                    id="sample6"
                    name="password"
-                   {% if login_in_progress %}style="color: red" readonly{% endif %}
                    value="{{ password }}" />
             <label class="mdl-textfield__label" for="sample3">Password</label>
         </div>
         <button id="loginButton"
-                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-                {% if login_in_progress %}disabled{% endif %}>
-            {% if login_in_progress %}
-                Logging in...
-            {% else %}
-                Login
-            {% endif %}
+                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            Login
         </button>
     </form>
     <div class="register-text">
         Not registered yet? <a href="{% url 'register' %}"
     class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Click here!</a>
     </div>
-    <script>
-	document.addEventListener('DOMContentLoaded', function() {
-		var loginButton = document.getElementById('loginButton');
-		var loginInProgress = {{ login_in_progress|yesno:"true,false" }};
-
-		console.log('Login in progress:', loginInProgress);
-
-		if (loginInProgress) {
-			loginButton.disabled = true;
-			loginButton.textContent = 'Logging in...';
-			
-		} else {
-			loginButton.disabled = false;
-			loginButton.textContent = 'Login';
-		}
-	});
-    </script>
 {% endblock content %}

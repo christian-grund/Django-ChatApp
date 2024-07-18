@@ -207,3 +207,62 @@ logout-wrapper {
 .logout-p {
 	margin-bottom: 30px;
 }
+
+@media (max-width: 750px) {
+	.logout-h1 {
+		font-size: 40px;
+	}
+}
+
+@media (max-width: 560px) {
+	.mdl-layout__header-row {
+		padding: 0 16px 0 16px;
+	}
+
+	.c-pointer {
+		padding: unset;
+	}
+
+	.logout-h1 {
+		font-size: 32px;
+	}
+
+	ul {
+		padding: 0 0 0 16px;
+	}
+}
+
+@media (max-width: 425px) {
+	.mdl-layout-title {
+		font-size: 16px;
+	}
+
+	.bubble {
+		width: 250px;
+	}
+
+	.mdl-textfield {
+		width: 200px;
+	}
+
+	#messageInput {
+		width: 300px !important;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+}
+
+@media (max-width: 350px) {
+	.mdl-layout-title {
+		font-size: 14px;
+	}
+
+	.c-pointer {
+		font-size: 12px;
+	}
+
+	.register-text {
+		font-size: 16px;
+	}
+}
