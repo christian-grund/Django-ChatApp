@@ -22,9 +22,10 @@ from chat.views import index, login_view, logout_view, register_view, delete_mes
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='/login/?next=/chat/', permanent=False)),
-    path('chat/', index),
+    # path('chat/', index),
+    path('chat/', include('chat.urls')),
     path("register/", register_view, name='register'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
-    path('chat/', include('chat.urls')),
+    
 ]

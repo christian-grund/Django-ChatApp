@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from .forms import RegisterForm
 from .models import Chat, Message
 import json
@@ -96,13 +97,14 @@ def login_view(request):
     return render(request, 'auth/login.html', {'redirect': redirect_to})
 
 
+@never_cache
 def logout_view(request):
     """
     Handle user logout.
     """
     if request.method == 'POST':
         logout(request)
-        return redirect('login')  # Verwende hier den Namen der Login-View
+        return redirect('login') 
     return render(request, 'auth/logout.html') 
 
 
